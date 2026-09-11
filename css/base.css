@@ -1,0 +1,69 @@
+:root {
+  color-scheme: light;
+  --color-ink: #202124;
+  --color-muted: #68707c;
+  --color-surface: #ffffff;
+  --color-canvas: #f7f7f9;
+  --color-border: #dedfe4;
+  --color-brand: #7d20f8;
+  --color-brand-dark: #6414d1;
+  --color-brand-soft: #f2eaff;
+  --color-disabled: #a5a8b0;
+  --radius-large: 12px;
+  --radius-medium: 8px;
+  --container: 1080px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--color-ink);
+  background: var(--color-canvas);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font: inherit;
+}
+
+.container {
+  width: min(calc(100% - 40px), var(--container));
+  margin-inline: auto;
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+  padding: 10px 14px;
+  color: var(--color-surface);
+  background: var(--color-brand-dark);
+  border-radius: 8px;
+  transform: translateY(-150%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
