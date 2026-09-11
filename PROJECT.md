@@ -91,6 +91,27 @@ como tiempos, estatus, volumen y costos cuando la información esté disponible.
 Análisis integral y comparativo de sucursales utilizando los indicadores
 operativos disponibles.
 
+### 13. Reporte TEIKIT & LUCKY
+
+Herramienta destinada a generar el reporte operativo periódico de TEIKIT y LUCKY a partir de las bases correspondientes.
+
+El reporte se genera de forma semanal y mensual y contempla:
+
+- Tiempos de entrega.
+- Órdenes totales.
+- Órdenes entregadas y no entregadas.
+- Porcentaje de entrega y no entrega.
+- Razones de rechazo.
+- Razones de cancelación.
+- Razones de devolución.
+- Share de proveedor logístico por sucursal.
+- Distancia promedio por sucursal.
+- Desglose de información por marca, sucursal y periodo.
+
+El objetivo del módulo es automatizar la preparación del reporte recurrente y generar un resultado final listo para compartir.
+
+La lógica específica, estructura de los archivos de entrada, cálculos, formato y archivo de salida serán definidos antes de iniciar su desarrollo.
+
 ## Estructura base del portal
 
 **Estado: Primera versión completada.**
