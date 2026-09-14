@@ -28,8 +28,12 @@ herramientas sencillas, independientes y fáciles de mantener.
 
 ### 1. Tiempos de entrega
 
+Estado: Primera versión funcional en desarrollo.
+
 Análisis de tiempos `<45`, `45–60` y `>60` minutos, con desglose por las diferentes
 dimensiones disponibles en la base.
+
+Documentación: `docs/tiempos-entrega.md`.
 
 ### 2. Estatus de órdenes
 

@@ -1,12 +1,13 @@
 const modules = [
   {
-    name: "Restaurant Billing",
-    description: "Espacio reservado para el futuro análisis de facturación de restaurantes.",
-    status: "En definición",
+    name: "Tiempos de entrega",
+    description: "Analiza tiempos de órdenes completadas y valida la consistencia de los tiempos reportados.",
+    status: "Disponible",
+    href: "modules/tiempos-entrega.html",
   },
   {
-    name: "Analizador Inteligente de Órdenes",
-    description: "Espacio reservado para incorporar posteriormente el análisis de órdenes.",
+    name: "Restaurant Billing",
+    description: "Espacio reservado para el futuro análisis de facturación de restaurantes.",
     status: "En definición",
   },
 ];
@@ -28,14 +29,19 @@ function createModuleRow(module) {
   const description = document.createElement("p");
   description.textContent = module.description;
 
-  const button = document.createElement("button");
-  button.className = "module-row__action";
-  button.type = "button";
-  button.disabled = true;
-  button.textContent = "Abrir";
+  const action = document.createElement(module.href ? "a" : "button");
+  action.className = `module-row__action${module.href ? " module-row__action--enabled" : ""}`;
+  action.textContent = "Abrir";
+  if (module.href) {
+    action.href = module.href;
+    action.setAttribute("aria-label", `Abrir ${module.name}`);
+  } else {
+    action.type = "button";
+    action.disabled = true;
+  }
 
   details.append(title, description);
-  article.append(details, status, button);
+  article.append(details, status, action);
   return article;
 }
 

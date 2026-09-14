@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Análisis local de tiempos de entrega de Ambit Data Studio.">
+    <title>Tiempos de entrega · Ambit Data Studio</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/tiempos-entrega.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Ir al contenido principal</a>
+    <header class="site-header">
+      <div class="container header-content">
+        <a class="brand" href="../index.html" aria-label="Ambit Data Studio, volver al catálogo">
+          <img src="../assets/ambit-logo.png" alt="Ambit" width="202" height="60">
+          <span class="product-name">Data Studio</span>
+        </a>
+        <span class="environment-label">Portal interno</span>
+      </div>
+    </header>
+
+    <main id="contenido" class="delivery-page">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Navegación secundaria">
+          <a href="../index.html">Herramientas</a><span aria-hidden="true">/</span><span>Tiempos de entrega</span>
+        </nav>
+
+        <section class="module-heading">
+          <div>
+            <h1>Tiempos de entrega</h1>
+            <p>Analiza el desempeño de órdenes completadas y valida la consistencia de los tiempos reportados.</p>
+          </div>
+          <span class="local-badge">Procesamiento local</span>
+        </section>
+
+        <section id="upload-panel" class="upload-panel" aria-labelledby="upload-title">
+          <div>
+            <h2 id="upload-title">Archivo operativo</h2>
+            <p>Selecciona un archivo Excel o CSV. La información permanece en este navegador durante la sesión.</p>
+          </div>
+          <div class="file-actions">
+            <label class="primary-button" for="file-input">Seleccionar archivo</label>
+            <input id="file-input" class="visually-hidden" type="file" accept=".csv,.xlsx,.xls">
+            <button id="analyze-button" class="primary-button" type="button" disabled>Analizar</button>
+            <button id="replace-button" class="secondary-button" type="button" hidden>Reemplazar archivo</button>
+            <button id="download-button" class="secondary-button" type="button" disabled>Descargar análisis</button>
+          </div>
+          <div id="file-meta" class="file-meta" aria-live="polite">Ningún archivo seleccionado.</div>
+          <div id="message" class="message" role="status" aria-live="polite" hidden></div>
+        </section>
+
+        <section id="dashboard" class="dashboard" hidden>
+          <div id="load-summary" class="load-summary" aria-label="Resumen de carga"></div>
+
+          <section class="filter-panel" aria-labelledby="filter-title">
+            <div class="panel-heading">
+              <div><h2 id="filter-title">Filtros</h2><p>Todos los indicadores se actualizan con la selección.</p></div>
+              <button id="clear-filters" class="text-button" type="button">Limpiar filtros</button>
+            </div>
+            <div id="filters" class="filters-grid"></div>
+          </section>
+
+          <section aria-labelledby="kpi-title">
+            <div class="panel-heading"><div><h2 id="kpi-title">Indicadores principales</h2><p id="filtered-count"></p></div></div>
+            <div id="kpi-grid" class="kpi-grid"></div>
+          </section>
+
+          <section class="executive-summary" aria-labelledby="summary-title">
+            <h2 id="summary-title">Resumen ejecutivo</h2>
+            <p id="summary-text"></p>
+            <ul id="summary-observations"></ul>
+          </section>
+
+          <section class="analysis-panel" aria-labelledby="analysis-title">
+            <div class="panel-heading"><div><h2 id="analysis-title">Análisis</h2><p>Consulta distribuciones, desgloses y validaciones.</p></div></div>
+            <div id="analysis-tabs" class="analysis-tabs" role="tablist" aria-label="Vistas del análisis"></div>
+            <div id="analysis-content" class="analysis-content"></div>
+          </section>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-content"><p>Ambit Data Studio</p><p>Los datos no se almacenan al recargar la página</p></div>
+    </footer>
+
+    <script src="../js/vendor/xlsx.full.min.js"></script>
+    <script src="../js/vendor/exceljs.min.js"></script>
+    <script type="module" src="../js/modules/tiempos-entrega/delivery-times.js"></script>
+  </body>
+</html>
