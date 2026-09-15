@@ -1,9 +1,9 @@
-import { mapColumns, normalizeRows } from "./column-normalizer.js";
-import { readOperationalFile } from "./file-reader.js";
-import { applyFilters, createFilterOptions, emptyFilters } from "./filters.js";
-import { prepareDataset } from "./metrics.js";
-import { renderBreakdown, renderDistribution, renderExecutiveSummary, renderKpis, renderLoadSummary, renderStages, renderValidation, renderWithoutWait } from "./dashboard-renderer.js";
-import { exportDeliveryAnalysis } from "./exporter.js";
+import { mapColumns, normalizeRows } from "./column-normalizer.js?v=20260915-stage-minutes";
+import { readOperationalFile } from "./file-reader.js?v=20260915-stage-minutes";
+import { applyFilters, createFilterOptions, emptyFilters } from "./filters.js?v=20260915-stage-minutes";
+import { prepareDataset } from "./metrics.js?v=20260915-stage-minutes";
+import { renderBreakdown, renderDistribution, renderExecutiveSummary, renderKpis, renderLoadSummary, renderStages, renderValidation, renderWithoutWait } from "./dashboard-renderer.js?v=20260915-stage-minutes";
+import { exportDeliveryAnalysis } from "./exporter.js?v=20260915-stage-minutes";
 
 const elements = {
   fileInput: document.querySelector("#file-input"),
@@ -94,7 +94,7 @@ function addDateInput(container, key, label) {
 }
 
 function renderFilters() {
-  const options = createFilterOptions(state.dataset.analyzed);
+  const options = createFilterOptions(state.dataset.stageUniverse);
   elements.filters.replaceChildren();
   addDateInput(elements.filters, "start", "Periodo desde");
   addDateInput(elements.filters, "end", "Periodo hasta");
@@ -119,6 +119,10 @@ function currentRows() {
   return applyFilters(state.dataset.analyzed, state.filters);
 }
 
+function currentStageRows() {
+  return applyFilters(state.dataset.stageUniverse, state.filters);
+}
+
 function renderActiveAnalysis(rows) {
   const actions = {
     distribution: () => renderDistribution(elements.analysisContent, rows),
@@ -128,7 +132,7 @@ function renderActiveAnalysis(rows) {
     restaurant: () => renderBreakdown(elements.analysisContent, rows, "restaurant", "Restaurant"),
     zone: () => renderBreakdown(elements.analysisContent, rows, "zone", "Zona"),
     city: () => renderBreakdown(elements.analysisContent, rows, "city", "Ciudad"),
-    stages: () => renderStages(elements.analysisContent, rows, state.mapping),
+    stages: () => renderStages(elements.analysisContent, currentStageRows(), state.mapping),
     wait: () => renderWithoutWait(elements.analysisContent, rows, state.mapping),
     validation: () => renderValidation(elements.analysisContent, rows, state.mapping),
   };
@@ -166,6 +170,7 @@ function renderTabs() {
 async function analyzeFile() {
   if (!state.file) return;
   resetMessage();
+  showMessage("Procesando archivo...", "success");
   elements.analyzeButton.disabled = true;
   elements.analyzeButton.textContent = "Analizando…";
   try {
@@ -203,16 +208,19 @@ async function analyzeFile() {
   }
 }
 
-elements.fileInput.addEventListener("change", () => {
-  const [file] = elements.fileInput.files;
+function handleFileSelection(event) {
+  const [file] = event.target.files || [];
   state.file = file || null;
   state.dataset = null;
   elements.dashboard.hidden = true;
   elements.downloadButton.disabled = true;
   resetMessage();
   elements.analyzeButton.disabled = !file;
-  elements.fileMeta.textContent = file ? `${file.name} · ${(file.size / 1024).toFixed(1)} KB` : "Ningún archivo seleccionado.";
-});
+  elements.fileMeta.textContent = file ? `Nombre del archivo: ${file.name} · ${(file.size / 1024).toFixed(1)} KB` : "Ningún archivo seleccionado.";
+  if (file) showMessage("Archivo seleccionado.", "success");
+}
+
+elements.fileInput.addEventListener("change", handleFileSelection);
 
 elements.analyzeButton.addEventListener("click", analyzeFile);
 elements.replaceButton.addEventListener("click", () => elements.fileInput.click());
@@ -231,6 +239,7 @@ elements.downloadButton.addEventListener("click", async () => {
     await new Promise((resolve) => requestAnimationFrame(resolve));
     const result = await exportDeliveryAnalysis({
       rows: currentRows(),
+      stageRows: currentStageRows(),
       dataset: state.dataset,
       mapping: state.mapping,
       filters: state.filters,

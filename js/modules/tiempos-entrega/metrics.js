@@ -25,6 +25,12 @@ export function parseDuration(value) {
   return Number.isFinite(number) ? number : null;
 }
 
+export function parseStageDuration(value) {
+  if (value === null || value === undefined || value === "") return null;
+  if (typeof value === "number") return Number.isFinite(value) ? value : null;
+  return parseDuration(value);
+}
+
 export function parseDate(value) {
   if (value instanceof Date && !Number.isNaN(value.getTime())) return new Date(value.getTime());
   if (typeof value === "number" && Number.isFinite(value)) {
@@ -84,10 +90,12 @@ export function prepareDataset(rows) {
   const complete = prepared.filter((row) => row.status === "COMPLETE");
   const eligible = complete.filter((row) => ELIGIBLE_PROVIDERS.has(row.provider));
   const analyzed = eligible.filter((row) => row.officialTime !== null && row.officialTime >= 0);
+  const stageUniverse = prepared.filter((row) => ELIGIBLE_PROVIDERS.has(row.provider));
   return {
     all: prepared,
     eligible,
     analyzed,
+    stageUniverse,
     counts: {
       total: prepared.length,
       complete: complete.length,
@@ -96,6 +104,7 @@ export function prepareDataset(rows) {
       excludedProvider: complete.length - eligible.length,
       invalidTimes: eligible.length - analyzed.length,
       invalidDates: eligible.filter((row) => !row.createdDate).length,
+      stageUniverse: stageUniverse.length,
     },
   };
 }

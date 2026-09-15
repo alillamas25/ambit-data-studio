@@ -1,6 +1,6 @@
-import { breakdown, calculateMetrics } from "./metrics.js";
-import { analyzeStages, compareStageSum, compareWithoutWait, validateCalculatedTimes, validateIndicators } from "./validation.js";
-import { buildExecutiveSummary } from "./summary.js";
+import { breakdown, calculateMetrics } from "./metrics.js?v=20260915-stage-minutes";
+import { analyzeStages, analyzeStagesByStatus, compareStageSum, compareWithoutWait, validateCalculatedTimes, validateIndicators } from "./validation.js?v=20260915-stage-minutes";
+import { buildExecutiveSummary } from "./summary.js?v=20260915-stage-minutes";
 
 const numberFormat = new Intl.NumberFormat("es-MX", { maximumFractionDigits: 1 });
 
@@ -20,6 +20,7 @@ export function renderLoadSummary(container, counts) {
     ["Órdenes cargadas", counts.total],
     ["Estatus COMPLETE", counts.complete],
     ["Elegibles", counts.eligible],
+    ["Universo etapas", counts.stageUniverse],
     ["Excluidas por estatus", counts.excludedStatus],
     ["Excluidas por proveedor", counts.excludedProvider],
   ];
@@ -127,16 +128,37 @@ function metricCards(entries) {
 
 export function renderStages(container, rows, mapping) {
   const stages = analyzeStages(rows, mapping);
+  const statuses = analyzeStagesByStatus(rows, mapping);
   const stageSum = compareStageSum(rows, mapping);
   const available = stages.filter((stage) => stage.available);
   if (!available.length) {
     container.replaceChildren(create("p", "analysis-note", "El archivo no contiene columnas de tiempos por etapa."));
     return;
   }
-  const contents = [create("h3", "", "Tiempos por etapa"), table(
-    ["Etapa", "Con información", "Cobertura", "Promedio", "Mediana"],
-    available.map((stage) => [stage.label, formatNumber(stage.count), formatPercent(stage.coverage), formatMinutes(stage.average), formatMinutes(stage.median)]),
-  )];
+  const statusNames = [...new Set(rows.map((row) => row.status || "Sin estatus"))].sort((a, b) => a.localeCompare(b, "es"));
+  const contents = [
+    create("h3", "", "Tiempos por etapa"),
+    create("p", "analysis-note", "Universo: órdenes de UBER_DAAS, RAPPI_CARGO y DIDI_DELIVERY de todos los estatus. Los promedios de cada etapa consideran únicamente registros con tiempo válido."),
+    metricCards([
+      ["Total universo de etapas", formatNumber(rows.length)],
+      ["Estatus presentes", statusNames.join(", ") || "—"],
+    ]),
+    table(
+      ["Etapa", "Órdenes del universo B", "Órdenes con dato", "Órdenes con dato válido", "Registros inválidos", "Cobertura válida", "Promedio", "Mediana"],
+      available.map((stage) => [stage.label, formatNumber(stage.universeCount), formatNumber(stage.withDataCount), formatNumber(stage.validCount), formatNumber(stage.invalidCount), formatPercent(stage.coverage), formatMinutes(stage.average), formatMinutes(stage.median)]),
+    ),
+  ];
+  if (statuses.length) {
+    contents.push(create("h3", "", "Promedio por estatus"));
+    contents.push(table(
+      ["Estatus", "Órdenes", "Aceptación", "Llegar tienda", "Recoger", "Entregar", "Completar"],
+      statuses.map((group) => [
+        group.status,
+        formatNumber(group.count),
+        ...["acceptance", "toStore", "pickup", "delivery", "completion"].map((key) => formatMinutes(group.stages[key]?.average ?? null)),
+      ]),
+    ));
+  }
   if (stageSum.available) {
     contents.push(create("h3", "", "Suma de etapas frente al tiempo total de envío"));
     contents.push(metricCards([

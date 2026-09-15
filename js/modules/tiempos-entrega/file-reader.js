@@ -62,7 +62,12 @@ export async function readOperationalFile(file) {
 
   if (!window.XLSX) throw new Error("El lector local de Excel no está disponible.");
   const data = await readWithFileReader(file, "arrayBuffer");
-  const workbook = window.XLSX.read(data, { type: "array", cellDates: true });
+  let workbook;
+  try {
+    workbook = window.XLSX.read(data, { type: "array", cellDates: true });
+  } catch (error) {
+    throw new Error("No se pudo interpretar el archivo Excel.", { cause: error });
+  }
   const sheetName = workbook.SheetNames[0];
   if (!sheetName) throw new Error("El archivo de Excel no contiene hojas disponibles.");
   const rows = window.XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: null, raw: true });

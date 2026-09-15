@@ -17,7 +17,7 @@ const rows = [
   ["T-002", "02/09/2026 11:00", "02/09/2026 11:55", "COMPLETE", "RAPPI_CARGO", 10, 48, 45, 0, 1, 0, 40, 4, 9, "", 29, 3, "Sucursal Centro", "Centro", "CDMX"],
   ["T-003", "03/09/2026 12:00", "03/09/2026 13:10", "COMPLETE", "RAPPI_CARGO", 10, 62, 60, 0, 0, 0, 54, 4, 10, 8, 40, 4, "Sucursal Centro", "Centro", "CDMX"],
   ["T-004", "04/09/2026 13:00", "04/09/2026 14:15", "COMPLETE", "DIDI_DELIVERY", 10, 66, 61, 0, 0, 1, 58, 5, 10, 9, 42, 4, "Sucursal Sur", "Sur", "Puebla"],
-  ["T-005", "05/09/2026 14:00", "05/09/2026 14:40", "CANCELLED", "UBER_DAAS", 5, 35, 30, 1, 1, 0, 30, 2, 8, 5, 20, 1, "Sucursal Norte", "Norte", "CDMX"],
+  ["T-005", "05/09/2026 14:00", "05/09/2026 14:40", "CANCELLED", "UBER_DAAS", 5, 35, "", 1, 1, 0, 30, 2, 8, 5, 20, 1, "Sucursal Norte", "Norte", "CDMX"],
   ["T-006", "06/09/2026 15:00", "06/09/2026 15:55", "COMPLETE", "OTRO", 5, 50, 48, 0, 1, 0, 45, 4, 8, 7, 31, 2, "Sucursal Norte", "Norte", "CDMX"],
   ["T-007", "07/09/2026 16:00", "07/09/2026 16:55", "COMPLETE", "UBER_DAAS", 5, 50, "", 0, 1, 0, 45, 4, 8, 7, 31, 2, "Sucursal Norte", "Norte", "CDMX"],
 ];
@@ -29,11 +29,14 @@ function csvValue(value) {
 
 async function runAnalysis(page, file) {
   await page.locator("#file-input").setInputFiles(file);
+  assert.ok((await page.locator("#file-meta").textContent()).includes(`Nombre del archivo: ${file.name}`));
+  assert.equal(await page.locator("#analyze-button").isEnabled(), true);
+  assert.match(await page.locator("#message").textContent(), /Archivo seleccionado/);
   await page.locator("#analyze-button").click();
-  await page.locator("#message").waitFor({ state: "visible" });
+  await page.waitForFunction(() => /Análisis completado/.test(document.querySelector("#message")?.textContent || ""));
   await page.locator("#dashboard").waitFor({ state: "visible" });
   assert.match(await page.locator("#message").textContent(), /Análisis completado/);
-  assert.equal(await page.locator("#load-summary .summary-item strong").allTextContents().then((values) => values.join(",")), "7,6,5,1,1");
+  assert.equal(await page.locator("#load-summary .summary-item strong").allTextContents().then((values) => values.join(",")), "7,6,5,6,1,1");
   assert.equal(await page.locator("#kpi-grid .kpi strong").allTextContents().then((values) => values.slice(0, 5).join(",")), "4,1,2,2,1");
 }
 
@@ -99,7 +102,7 @@ async function runAnalysis(page, file) {
   assert.equal(await page.locator("#kpi-grid .kpi strong").first().textContent(), "4");
   await page.getByRole("tab", { name: "Tiempos por etapa" }).click();
   const pickupRow = page.locator("#analysis-content tbody tr").filter({ hasText: "Recoger" });
-  assert.equal(await pickupRow.locator("td").nth(1).textContent(), "3", "Los valores vacíos no deben contarse como cero");
+  assert.equal(await pickupRow.locator("td").nth(3).textContent(), "5", "Los valores vacíos no deben contarse como cero");
   for (const tabName of ["Distribución", "Evolución por día", "Por hora", "Proveedores", "Restaurantes", "Zona", "Ciudad", "Sin espera", "Validación"]) {
     await page.getByRole("tab", { name: tabName, exact: true }).click();
     assert.notEqual((await page.locator("#analysis-content").textContent()).trim(), "", `${tabName} debe mostrar contenido`);
@@ -109,6 +112,10 @@ async function runAnalysis(page, file) {
   XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([headers, ...rows]), "Órdenes");
   const xlsxBuffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
   await runAnalysis(page, { name: "prueba-sintetica.xlsx", mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", buffer: Buffer.from(xlsxBuffer) });
+  assert.match(await page.locator("#message").textContent(), /Análisis completado/, "Un XLSX válido debe cargar después de separar los universos");
+  await page.getByRole("tab", { name: "Tiempos por etapa" }).click();
+  const stageUniverseText = await page.locator("#analysis-content").textContent();
+  assert.match(stageUniverseText, /CANCELLED/, "Una orden no COMPLETE sin tiempo oficial debe permanecer en el universo de etapas");
 
   const xlsBuffer = XLSX.write(workbook, { type: "buffer", bookType: "biff8" });
   await runAnalysis(page, { name: "prueba-sintetica.xls", mimeType: "application/vnd.ms-excel", buffer: Buffer.from(xlsBuffer) });

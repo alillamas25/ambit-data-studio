@@ -1,4 +1,4 @@
-import { breakdown, calculateMetrics } from "./metrics.js";
+import { breakdown, calculateMetrics } from "./metrics.js?v=20260915-stage-minutes";
 
 const numberFormat = new Intl.NumberFormat("es-MX", { maximumFractionDigits: 1 });
 

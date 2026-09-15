@@ -1,6 +1,6 @@
-import { breakdown, calculateMetrics, classifyTime } from "./metrics.js";
-import { buildExecutiveSummary } from "./summary.js";
-import { analyzeStages, validateCalculatedTimes } from "./validation.js";
+import { breakdown, calculateMetrics, classifyTime } from "./metrics.js?v=20260915-stage-minutes";
+import { buildExecutiveSummary } from "./summary.js?v=20260915-stage-minutes";
+import { analyzeStages, analyzeStagesByStatus, validateCalculatedTimes } from "./validation.js?v=20260915-stage-minutes";
 
 const FILTER_LABELS = { start: "Periodo desde", end: "Periodo hasta", day: "Día", hour: "Hora", restaurant: "Restaurant", zone: "Zona", city: "Ciudad", provider: "Repartido por", brand: "Marca" };
 const BREAKDOWN_HEADERS = ["Órdenes", "Promedio", "Mediana", "Cantidad <45", "% <45", "Cantidad 45–60", "% 45–60", "Cantidad <60", "% <60", "Cantidad >60", "% >60"];
@@ -138,11 +138,37 @@ function makeSummarySheet(workbook, { rows, dataset, filters, sourceFile }) {
 
 function makeStagesSheet(workbook, rows, mapping) {
   const worksheet = workbook.addWorksheet("Tiempos por etapa", { properties: { tabColor: { argb: COLORS.purple } } });
-  addTitle(worksheet, "Tiempos por etapa", "Cobertura y duración de las etapas disponibles", 5);
-  worksheet.addRow([]); worksheet.addRow(["Etapa", "Órdenes con dato", "Cobertura %", "Promedio", "Mediana"]); styleHeader(worksheet.getRow(4));
-  analyzeStages(rows, mapping).forEach((stage) => worksheet.addRow(stage.available ? [STAGE_LABELS[stage.key], stage.count, stage.coverage / 100, stage.average, stage.median] : [STAGE_LABELS[stage.key], "Información no disponible", null, null, null]));
-  styleData(worksheet, 5, worksheet.rowCount, { integers: [2], percents: [3], times: [4, 5] });
-  [42, 20, 16, 16, 16].forEach((width, index) => { worksheet.getColumn(index + 1).width = width; }); configureTable(worksheet, 4, worksheet.rowCount, 5);
+  addTitle(worksheet, "Tiempos por etapa", "Cobertura y duración de las etapas disponibles", 8);
+  worksheet.addRow([]);
+  worksheet.mergeCells("A4:H4");
+  Object.assign(worksheet.getCell("A4"), {
+    value: "Universo: órdenes de UBER_DAAS, RAPPI_CARGO y DIDI_DELIVERY de todos los estatus. Los promedios de cada etapa consideran únicamente registros con tiempo válido.",
+    fill: fill(COLORS.purpleSoft), font: { name: "Aptos", size: 10, color: { argb: COLORS.purpleDark } },
+    alignment: { vertical: "middle", wrapText: true }, border: BORDER,
+  });
+  worksheet.getRow(4).height = 34;
+  worksheet.addRow(["Total universo de etapas", rows.length]);
+  worksheet.addRow(["Estatus presentes", [...new Set(rows.map((row) => row.status || "Sin estatus"))].sort((a, b) => a.localeCompare(b, "es")).join(", ") || "—"]);
+  worksheet.addRow([]);
+  worksheet.addRow(["Etapa", "Órdenes del universo B", "Órdenes con dato", "Órdenes con dato válido", "Registros inválidos", "Cobertura %", "Promedio", "Mediana"]);
+  styleHeader(worksheet.getRow(8));
+  analyzeStages(rows, mapping).forEach((stage) => worksheet.addRow(stage.available
+    ? [STAGE_LABELS[stage.key], stage.universeCount, stage.withDataCount, stage.validCount, stage.invalidCount, stage.coverage / 100, stage.average, stage.median]
+    : [STAGE_LABELS[stage.key], rows.length, "Información no disponible", null, null, null, null, null]));
+  const stageEndRow = worksheet.rowCount;
+  styleData(worksheet, 9, stageEndRow, { integers: [2, 3, 4, 5], percents: [6], times: [7, 8] });
+  const statusStart = stageEndRow + 2;
+  worksheet.mergeCells(statusStart, 1, statusStart, 8);
+  Object.assign(worksheet.getCell(statusStart, 1), { value: "Promedio por estatus", font: { name: "Aptos", bold: true, color: { argb: COLORS.white } }, fill: fill(COLORS.purple) });
+  worksheet.addRow(["Estatus", "Órdenes", "Aceptación", "Llegar tienda", "Recoger", "Entregar", "Completar"]);
+  styleHeader(worksheet.getRow(statusStart + 1));
+  analyzeStagesByStatus(rows, mapping).forEach((group) => worksheet.addRow([
+    group.status, group.count,
+    ...["acceptance", "toStore", "pickup", "delivery", "completion"].map((key) => group.stages[key]?.average ?? null),
+  ]));
+  styleData(worksheet, statusStart + 2, worksheet.rowCount, { integers: [2], times: [3, 4, 5, 6, 7] });
+  [42, 24, 22, 25, 20, 18, 18, 18].forEach((width, index) => { worksheet.getColumn(index + 1).width = width; });
+  configureTable(worksheet, 8, stageEndRow, 8);
 }
 function validationColor(category) {
   if (/Exacta|Muy cercana/i.test(category)) return [COLORS.green, COLORS.greenText];
@@ -181,7 +207,7 @@ function downloadBuffer(buffer, filename) {
   const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = filename;
   document.body.append(link); link.click(); link.remove(); setTimeout(() => URL.revokeObjectURL(url), 0);
 }
-export async function exportDeliveryAnalysis({ rows, dataset, mapping, filters, sourceFile }) {
+export async function exportDeliveryAnalysis({ rows, stageRows, dataset, mapping, filters, sourceFile }) {
   if (!window.ExcelJS) throw new Error("El generador local de Excel no está disponible.");
   const workbook = new window.ExcelJS.Workbook();
   Object.assign(workbook, { creator: "Ambit Data Studio", title: "Ambit Data Studio · Tiempos de entrega", subject: "Análisis local de tiempos de entrega", created: new Date() });
@@ -192,7 +218,7 @@ export async function exportDeliveryAnalysis({ rows, dataset, mapping, filters, 
   makeBreakdownSheet(workbook, rows, "zone", "Zona", Boolean(mapping.zone));
   makeBreakdownSheet(workbook, rows, "city", "Ciudad", Boolean(mapping.city));
   makeBreakdownSheet(workbook, rows, "provider", "Proveedor", Boolean(mapping.provider));
-  makeStagesSheet(workbook, rows, mapping); makeValidationSheet(workbook, rows, mapping); makeBaseSheet(workbook, rows, mapping);
+  makeStagesSheet(workbook, stageRows, mapping); makeValidationSheet(workbook, rows, mapping); makeBaseSheet(workbook, rows, mapping);
   const filename = filenameFor(rows); const buffer = await workbook.xlsx.writeBuffer(); downloadBuffer(buffer, filename);
   return { filename, sheetNames: workbook.worksheets.map((worksheet) => worksheet.name) };
 }

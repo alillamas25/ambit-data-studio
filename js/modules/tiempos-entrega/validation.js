@@ -1,5 +1,5 @@
 import { DIFFERENCE_THRESHOLDS, STAGES } from "./constants.js";
-import { average, classifyTime, median, parseDuration } from "./metrics.js";
+import { average, classifyTime, median, parseDuration, parseStageDuration } from "./metrics.js?v=20260915-stage-minutes";
 
 function truthyIndicator(value) {
   if (value === null || value === undefined || String(value).trim() === "") return null;
@@ -58,9 +58,44 @@ export function validateCalculatedTimes(rows, mapping) {
 export function analyzeStages(rows, mapping) {
   return STAGES.map(([key, label]) => {
     if (!mapping[key]) return { key, label, available: false };
-    const values = rows.map((row) => parseDuration(row.values[key])).filter((value) => value !== null);
-    return { key, label, available: true, count: values.length, coverage: rows.length ? values.length / rows.length * 100 : 0, average: average(values), median: median(values) };
+    const valuesWithData = rows
+      .map((row) => row.values[key])
+      .filter((value) => value !== null && value !== undefined && String(value).trim() !== "");
+    const parsed = valuesWithData.map(parseStageDuration);
+    const values = parsed.filter((value) => value !== null && Number.isFinite(value) && value >= 0);
+    const invalidCount = parsed.length - values.length;
+    return {
+      key,
+      label,
+      available: true,
+      universeCount: rows.length,
+      withDataCount: valuesWithData.length,
+      validCount: values.length,
+      invalidCount,
+      count: values.length,
+      coverage: rows.length ? values.length / rows.length * 100 : 0,
+      average: average(values),
+      median: median(values),
+    };
   });
+}
+
+const KNOWN_STATUSES = ["COMPLETE", "CANCELLED", "RETURNED", "RETURNING", "REJECTED", "ACCEPTED"];
+
+export function analyzeStagesByStatus(rows, mapping) {
+  const groups = new Map(KNOWN_STATUSES.map((status) => [status, []]));
+  groups.set("Otros", []);
+  rows.forEach((row) => {
+    const key = KNOWN_STATUSES.includes(row.status) ? row.status : "Otros";
+    groups.get(key).push(row);
+  });
+  return [...groups.entries()]
+    .filter(([, statusRows]) => statusRows.length)
+    .map(([status, statusRows]) => ({
+      status,
+      count: statusRows.length,
+      stages: Object.fromEntries(analyzeStages(statusRows, mapping).map((stage) => [stage.key, stage])),
+    }));
 }
 
 export function compareStageSum(rows, mapping) {
