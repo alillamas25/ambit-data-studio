@@ -99,6 +99,10 @@ operativos disponibles.
 
 Herramienta destinada a generar el reporte operativo periódico de TEIKIT y LUCKY a partir de las bases correspondientes.
 
+Estado: Primera versión funcional con exportación ejecutiva Excel.
+
+Documentación: `docs/reporte-teikit-lucky.md`.
+
 El reporte se genera de forma semanal y mensual y contempla:
 
 - Tiempos de entrega.
@@ -114,7 +118,7 @@ El reporte se genera de forma semanal y mensual y contempla:
 
 El objetivo del módulo es automatizar la preparación del reporte recurrente y generar un resultado final listo para compartir.
 
-La lógica específica, estructura de los archivos de entrada, cálculos, formato y archivo de salida serán definidos antes de iniciar su desarrollo.
+La lógica aprobada, las columnas de entrada, los cálculos y la exportación se documentan en `docs/reporte-teikit-lucky.md`.
 
 ## Estructura base del portal
 

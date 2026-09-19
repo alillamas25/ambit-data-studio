@@ -6,6 +6,12 @@ const modules = [
     href: "modules/tiempos-entrega.html",
   },
   {
+    name: "Reporte TEIKIT & LUCKY",
+    description: "Genera indicadores operativos por marca y sucursal a partir de archivos Excel o CSV.",
+    status: "Disponible",
+    href: "modules/reporte-teikit-lucky.html",
+  },
+  {
     name: "Restaurant Billing",
     description: "Espacio reservado para el futuro análisis de facturación de restaurantes.",
     status: "En definición",
