@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Limpieza local de archivos operativos en Ambit Data Studio.">
+    <title>Limpieza de datos · Ambit Data Studio</title>
+    <link rel="icon" href="../assets/ambit-logo.png" type="image/png">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/limpieza-datos.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Ir al contenido principal</a>
+    <header class="site-header"><div class="container header-content"><a class="brand" href="../index.html" aria-label="Ambit Data Studio, volver al catálogo"><img src="../assets/ambit-logo.png" alt="Ambit" width="202" height="60"><span class="product-name">Data Studio</span></a><span class="environment-label">Portal interno</span></div></header>
+    <main id="contenido" class="cleaning-page"><div class="container">
+      <nav class="breadcrumb" aria-label="Navegación secundaria"><a href="../index.html">Herramientas</a><span aria-hidden="true">/</span><span>Limpieza de datos</span></nav>
+      <section class="module-heading"><div><h1>Limpieza de datos</h1><p>Genera una base estructuralmente limpia, conservando los valores originales y el orden de las filas.</p></div><span class="local-badge">Procesamiento local</span></section>
+      <section class="upload-panel" aria-labelledby="cleaning-upload-title">
+        <div><h2 id="cleaning-upload-title">Archivo operativo</h2><p>Selecciona un Excel. El archivo se procesa en tu navegador y no se almacena.</p></div>
+        <div class="file-actions"><label class="primary-button" for="cleaning-file-input">Cargar Excel</label><input id="cleaning-file-input" class="visually-hidden" type="file" accept=".xlsx,.xls"><button id="cleaning-run-button" class="primary-button" type="button" disabled>Limpiar datos</button><button id="cleaning-replace-button" class="secondary-button" type="button" hidden>Reemplazar archivo</button><button id="cleaning-download-button" class="secondary-button" type="button" disabled>Descargar Excel limpio</button></div>
+        <div id="cleaning-file-meta" class="file-meta" aria-live="polite">Ningún archivo seleccionado.</div><div id="cleaning-message" class="message" role="status" aria-live="polite" hidden></div>
+      </section>
+      <section id="cleaning-results" class="cleaning-results" aria-labelledby="cleaning-results-title" hidden>
+        <div><h2 id="cleaning-results-title">Resultado de la limpieza</h2><p>Control de filas y distribución final por proveedor.</p></div>
+        <div id="cleaning-summary" class="load-summary" aria-label="Resumen de limpieza"></div>
+        <section class="provider-panel" aria-labelledby="provider-summary-title"><h3 id="provider-summary-title">Filas finales por proveedor</h3><div class="table-wrap"><table class="data-table"><thead><tr><th>Proveedor</th><th>Filas</th></tr></thead><tbody id="cleaning-providers"></tbody></table></div></section>
+      </section>
+    </div></main>
+    <footer class="site-footer"><div class="container footer-content"><p>Ambit Data Studio</p><p>Los datos no se almacenan al recargar la página</p></div></footer>
+    <script src="../js/vendor/xlsx.full.min.js"></script>
+    <script type="module" src="../js/modules/limpieza-datos/app.js"></script>
+  </body>
+</html>

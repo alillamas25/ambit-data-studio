@@ -1,0 +1,30 @@
+export const REQUIRED_COLUMNS = Object.freeze([
+  "orderId",
+  "Ciudad",
+  "Zona",
+  "Creada en",
+  "Orden manual",
+  "Orden planeada",
+  "Cooking Time",
+  "Estatus de orden",
+  "Razon de rechazo",
+  "subtotal",
+  "Cancelada en",
+  "Completada en",
+  "Restaurant",
+  "Repartido por",
+  "Distancia manejada",
+  "Tiempo de aceptacion de restaurante",
+  "Tiempo de aceptacion de repartidor",
+  "Tiempo para llegar a tienda",
+  "Tiempo para recoger",
+  "Tiempo para entregar",
+  "Tiempo para completar",
+  "Tiempo total de envio sin cooking time",
+]);
+
+export const ALLOWED_PROVIDERS = Object.freeze([
+  "DIDI_DELIVERY",
+  "RAPPI_CARGO",
+  "UBER_DAAS",
+]);

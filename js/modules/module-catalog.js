@@ -12,6 +12,12 @@ const modules = [
     href: "modules/reporte-teikit-lucky.html",
   },
   {
+    name: "Limpieza de datos",
+    description: "Prepara archivos operativos conservando únicamente las columnas y proveedores necesarios para el análisis.",
+    status: "Disponible",
+    href: "modules/limpieza-datos.html",
+  },
+  {
     name: "Restaurant Billing",
     description: "Espacio reservado para el futuro análisis de facturación de restaurantes.",
     status: "En definición",

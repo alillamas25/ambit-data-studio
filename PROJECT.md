@@ -58,8 +58,12 @@ módulo.
 
 ### 6. Limpieza de datos
 
+Estado: Primera versión funcional en desarrollo.
+
 Procesamiento de archivos para aplicar reglas de limpieza y transformación y
 generar una base lista para utilizar en dashboards u otros análisis.
+
+Documentación: `docs/limpieza-datos.md`.
 
 ### 7. Restaurant Billing
 
