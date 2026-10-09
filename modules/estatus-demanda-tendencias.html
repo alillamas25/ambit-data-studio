@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Análisis local de estatus, demanda y tendencias operativas en Ambit Data Studio.">
+    <title>Estatus, Demanda y Tendencias · Ambit Data Studio</title>
+    <link rel="icon" href="../assets/ambit-logo.png" type="image/png">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/estatus-demanda-tendencias.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Ir al contenido principal</a>
+    <header class="site-header">
+      <div class="container header-content">
+        <a class="brand" href="../index.html" aria-label="Ambit Data Studio, volver al catálogo">
+          <img src="../assets/ambit-logo.png" alt="Ambit" width="202" height="60">
+          <span class="product-name">Data Studio</span>
+        </a>
+        <span class="environment-label">Portal interno</span>
+      </div>
+    </header>
+
+    <main id="contenido" class="status-page">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Navegación secundaria"><a href="../index.html">Herramientas</a><span aria-hidden="true">/</span><span>Estatus, Demanda y Tendencias</span></nav>
+        <section class="module-heading">
+          <div><h1>Estatus, Demanda y Tendencias</h1><p>Analiza volumen, estatus operativos, incidencias y evolución temporal desde una sola herramienta.</p></div>
+          <span class="local-badge">Procesamiento local</span>
+        </section>
+
+        <section class="upload-panel" aria-labelledby="upload-title">
+          <div><h2 id="upload-title">Archivo operativo</h2><p>Selecciona un Excel o CSV. Solo se analizan órdenes de UBER_DAAS, RAPPI_CARGO y DIDI_DELIVERY.</p></div>
+          <div class="file-actions">
+            <label class="primary-button" for="status-file-input">Seleccionar archivo</label>
+            <input id="status-file-input" class="visually-hidden" type="file" accept=".csv,.xlsx,.xls">
+            <button id="status-analyze-button" class="primary-button" type="button" disabled>Analizar</button>
+            <button id="status-replace-button" class="secondary-button" type="button" hidden>Reemplazar archivo</button>
+            <button id="status-download-button" class="secondary-button" type="button" disabled>Descargar análisis</button>
+          </div>
+          <div id="status-file-meta" class="file-meta" aria-live="polite">Ningún archivo seleccionado.</div>
+          <div id="status-message" class="message" role="status" aria-live="polite" hidden></div>
+        </section>
+
+        <section id="status-dashboard" class="dashboard" hidden>
+          <div id="status-load-summary" class="load-summary" aria-label="Resumen de carga"></div>
+          <section class="filter-panel" aria-labelledby="filters-title">
+            <div class="panel-heading"><div><h2 id="filters-title">Filtros</h2><p>Todos los indicadores, tablas y gráficas se actualizan conjuntamente.</p></div><button id="status-clear-filters" class="text-button" type="button">Limpiar filtros</button></div>
+            <div id="status-filters" class="filters-grid"></div>
+          </section>
+          <section aria-labelledby="kpis-title">
+            <div class="panel-heading"><div><h2 id="kpis-title">Indicadores principales</h2><p id="status-filtered-count"></p></div></div>
+            <div id="status-kpis" class="kpi-grid"></div>
+          </section>
+          <section class="analysis-panel" aria-labelledby="validation-title"><div class="panel-heading"><div><h2 id="validation-title">Control de datos</h2><p>Observaciones de estructura y clasificación.</p></div></div><ul id="status-validation" class="validation-list"></ul></section>
+          <div id="status-analysis" class="analysis-stack"></div>
+        </section>
+      </div>
+    </main>
+    <footer class="site-footer"><div class="container footer-content"><p>Ambit Data Studio</p><p>Los datos no se almacenan al recargar la página</p></div></footer>
+    <script src="../js/vendor/xlsx.full.min.js"></script>
+    <script src="../js/vendor/exceljs.min.js"></script>
+    <script type="module" src="../js/modules/estatus-demanda-tendencias/app.js?v=20260919-excel-export"></script>
+  </body>
+</html>

@@ -6,6 +6,12 @@ const modules = [
     href: "modules/tiempos-entrega.html",
   },
   {
+    name: "Estatus, Demanda y Tendencias",
+    description: "Analiza volumen, estatus, incidencias y evolución temporal de las órdenes operativas.",
+    status: "Disponible",
+    href: "modules/estatus-demanda-tendencias.html",
+  },
+  {
     name: "Reporte TEIKIT & LUCKY",
     description: "Genera indicadores operativos por marca y sucursal a partir de archivos Excel o CSV.",
     status: "Disponible",

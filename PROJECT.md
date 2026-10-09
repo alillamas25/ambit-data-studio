@@ -35,28 +35,28 @@ dimensiones disponibles en la base.
 
 Documentación: `docs/tiempos-entrega.md`.
 
-### 2. Estatus de órdenes
+### 2. Estatus, Demanda y Tendencias
 
-Análisis de órdenes `Complete`, `Cancelled`, `Returned`, `Returning` y otros estatus
-disponibles, incluyendo tasas de entrega y no entrega.
+Estado: Primera versión funcional en desarrollo.
 
-### 3. Demanda de órdenes
+Análisis integrado de volumen, estatus, incidencias y tendencias operativas por
+fecha, día, hora, sucursal, marca, ciudad, zona y proveedor. Considera todos los
+estatus disponibles dentro del universo de proveedores logísticos permitido.
 
-Análisis de volumen y comportamiento de órdenes por día, hora, semana, mes,
-sucursal, restaurante, proveedor u otras dimensiones disponibles.
+Documentación: `docs/estatus-demanda-tendencias.md`.
 
-### 4. Costos de envío
+### 3. Costos de envío
 
 Análisis de costos de envío, promedios, totales y distribución según las
 dimensiones disponibles en la información.
 
-### 5. KPIs principales
+### 4. KPIs principales
 
 Análisis ejecutivo que combine principalmente tiempos de entrega y estatus de
 órdenes, pudiendo incorporar otros indicadores relevantes conforme se defina el
 módulo.
 
-### 6. Limpieza de datos
+### 5. Limpieza de datos
 
 Estado: Primera versión funcional en desarrollo.
 
@@ -65,41 +65,41 @@ generar una base lista para utilizar en dashboards u otros análisis.
 
 Documentación: `docs/limpieza-datos.md`.
 
-### 7. Restaurant Billing
+### 6. Restaurant Billing
 
 Estado: Por definir.
 
 Los archivos de entrada, cruces, cálculos, indicadores y resultados se definirán
 posteriormente. No existe lógica aprobada para este módulo.
 
-### 8. Conciliación Cash Uber
+### 7. Conciliación Cash Uber
 
 Herramienta para realizar procesos de conciliación relacionados con órdenes Cash
 de Uber. La lógica específica será definida antes de su desarrollo.
 
-### 9. Cruce de información entre archivos
+### 8. Cruce de información entre archivos
 
 Herramienta para cruzar dos o más archivos utilizando una llave definida,
 encontrar coincidencias y diferencias, incorporar información entre archivos y
 generar un archivo resultado.
 
-### 10. Comparador de periodos
+### 9. Comparador de periodos
 
 Herramienta para comparar dos periodos de operación —por ejemplo, semana contra
 semana, mes contra mes o periodos personalizados— e identificar variaciones en
 indicadores, volumen, tiempos, estatus, costos u otras métricas disponibles.
 
-### 11. Desempeño de proveedores
+### 10. Desempeño de proveedores
 
 Análisis integral del desempeño de proveedores logísticos combinando indicadores
 como tiempos, estatus, volumen y costos cuando la información esté disponible.
 
-### 12. Desempeño de sucursales
+### 11. Desempeño de sucursales
 
 Análisis integral y comparativo de sucursales utilizando los indicadores
 operativos disponibles.
 
-### 13. Reporte TEIKIT & LUCKY
+### 12. Reporte TEIKIT & LUCKY
 
 Herramienta destinada a generar el reporte operativo periódico de TEIKIT y LUCKY a partir de las bases correspondientes.
 
