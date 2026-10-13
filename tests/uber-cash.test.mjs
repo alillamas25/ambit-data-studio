@@ -1,0 +1,17 @@
+import test from "node:test";import assert from "node:assert/strict";import { normalizeUuid,normalizeUber,normalizeInternal,parseCash } from "../js/modules/uber-cash/normalizer.js";import { reconcileCash } from "../js/modules/uber-cash/reconciliation.js";import { buildCashAnalysis } from "../js/modules/uber-cash/analytics.js";import { validateHeaders } from "../js/modules/uber-cash/file-reader.js";
+const uber=(uuid,cash=10,extra={})=>normalizeUber([{store_name:"Uber store",workflow_uuid:uuid,cash_collected:cash,...extra}]);const internal=(uuid,cash=10,extra={})=>normalizeInternal([{orderId:"1",total:cash,Restaurant:"Sucursal",workflow_uuid:uuid,...extra}]);const state=(u,i)=>reconcileCash(u,i).records[0]?.state;
+test("1. UUID con guiones coincide con UUID sin guiones",()=>assert.equal(normalizeUuid("27ab-3a2f"),"27AB3A2F"));
+test("2. UUID ignora mayúsculas y minúsculas",()=>assert.equal(normalizeUuid("abcDEF"),"ABCDEF"));
+test("3. Match exacto",()=>assert.equal(state(uber("A-B"),internal("AB")),"Coincide"));
+test("4. Faltante en Hoja 1 se clasifica Falta en Uber",()=>assert.equal(state([],internal("AB")),"Falta en Uber"));
+test("5. Faltante en Hoja 2 se clasifica Falta en sistema interno",()=>assert.equal(state(uber("AB"),[]),"Falta en sistema interno"));
+test("6. Cash igual coincide",()=>assert.equal(state(uber("AB",20),internal("AB",20)),"Coincide"));
+test("7. Diferencia de cash",()=>assert.equal(state(uber("AB",20),internal("AB",18)),"Cash diferente"));
+test("8. Tolerancia de 0.01 es inclusiva",()=>assert.equal(state(uber("AB",20.01),internal("AB",20)),"Coincide"));
+test("9. \\N no es comparable",()=>assert.equal(parseCash("\\N").comparable,false));
+test("10. Cash vacío no es comparable",()=>assert.equal(parseCash("").comparable,false));
+test("11. UUID vacío se reporta en calidad",()=>assert.equal(reconcileCash(uber(""),[]).quality[0].state,"UUID vacío"));
+test("12. UUID duplicado en Hoja 1 no se resuelve",()=>assert.equal(reconcileCash([...uber("AB"),...uber("A-B")],internal("AB")).records[0].state,"UUID duplicado"));
+test("13. UUID duplicado en Hoja 2 no se resuelve",()=>assert.equal(reconcileCash(uber("AB"),[...internal("AB"),...internal("A-B")]).records[0].state,"UUID duplicado"));
+test("14. Columnas faltantes producen mensaje específico",()=>assert.throws(()=>validateHeaders(["store_name"],["store_name","workflow_uuid"],"Hoja 1"),/workflow_uuid/));
+test("15. El resumen reconcilia matches e incidencias",()=>{const a=buildCashAnalysis(reconcileCash([...uber("A",10),...uber("B",20)],[...internal("A",10),...internal("C",30)]));assert.deepEqual({matches:a.summary.matches,coincide:a.summary.cashMatches,missingInternal:a.summary.missingInternal,missingUber:a.summary.missingUber},{matches:1,coincide:1,missingInternal:1,missingUber:1});});

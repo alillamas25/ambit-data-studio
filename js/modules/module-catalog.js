@@ -24,6 +24,12 @@ const modules = [
     href: "modules/limpieza-datos.html",
   },
   {
+    name: "Uber Cash",
+    description: "Concilia órdenes y efectivo entre la fuente Uber y el sistema interno mediante workflow_uuid.",
+    status: "Disponible",
+    href: "modules/uber-cash.html",
+  },
+  {
     name: "Restaurant Billing",
     description: "Espacio reservado para el futuro análisis de facturación de restaurantes.",
     status: "En definición",

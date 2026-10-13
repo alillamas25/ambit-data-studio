@@ -74,8 +74,12 @@ posteriormente. No existe lógica aprobada para este módulo.
 
 ### 7. Conciliación Cash Uber
 
-Herramienta para realizar procesos de conciliación relacionados con órdenes Cash
-de Uber. La lógica específica será definida antes de su desarrollo.
+Estado: Primera versión funcional en desarrollo.
+
+Módulo Uber Cash para conciliar dos hojas mediante `workflow_uuid`, identificar
+faltantes, diferencias de efectivo, valores no comparables y UUID duplicados.
+
+Documentación: `docs/uber-cash.md`.
 
 ### 8. Cruce de información entre archivos
 
