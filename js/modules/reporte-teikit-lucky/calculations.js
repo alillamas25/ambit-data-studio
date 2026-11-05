@@ -1,6 +1,8 @@
 import { BRANDS, INCIDENT_STATUSES, KNOWN_PAYMENT_METHODS, PRIMARY_PROVIDERS } from "./constants.js";
-import { comparableText, normalizeText } from "./normalizer.js";
-import { calculateSlaMinutes, classifySla, identifyBrand, isDelivered, isNotDelivered, isPlannedOrder, parseNumber } from "./rules.js";
+import { normalizeText } from "./normalizer.js";
+import { classifySla, isDelivered, isNotDelivered } from "./rules.js";
+import { createReportAccumulator } from "./incremental-accumulator.js";
+import { prepareReportRow } from "./report-row.js";
 
 const percentage = (count, total) => total ? (count / total) * 100 : 0;
 const average = (values) => values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
@@ -36,28 +38,7 @@ function incidence(rows, status) {
 }
 
 export function prepareReportRows(rows) {
-  return rows.map((row) => {
-    const status = comparableText(row.values.status);
-    const restaurant = normalizeText(row.values.restaurant);
-    const planned = isPlannedOrder(row.values.plannedOrder);
-    return {
-      ...row,
-      status,
-      restaurant,
-      brand: identifyBrand(restaurant),
-      paymentMethod: comparableText(row.values.paymentMethod),
-      provider: comparableText(row.values.provider),
-      planned,
-      deliveryMinutes: status === "COMPLETE" ? calculateSlaMinutes({
-        plannedOrder: row.values.plannedOrder,
-        officialTime: row.values.officialTime,
-        createdAt: row.values.createdAt,
-        completedAt: row.values.completedAt,
-        cookingTime: row.values.cookingTime,
-      }) : null,
-      distance: parseNumber(row.values.distance),
-    };
-  });
+  return rows.map(prepareReportRow);
 }
 
 export function calculateBrandReport(rows, brand) {
@@ -144,7 +125,7 @@ function calculateBrandReportCore(rows) {
   };
 }
 
-export function buildReport(rows) {
+export function buildReportReference(rows) {
   const prepared = prepareReportRows(rows);
   const paymentValues = [...new Set(prepared.map((row) => row.paymentMethod || "Sin método registrado"))].sort();
   const providerValues = [...new Set(prepared.map((row) => row.provider || "Sin proveedor registrado"))].sort();
@@ -160,4 +141,10 @@ export function buildReport(rows) {
       unexpectedProviders: providerValues.filter((value) => !PRIMARY_PROVIDERS.has(value)),
     },
   };
+}
+
+export function buildReport(rows) {
+  const accumulator = createReportAccumulator();
+  rows.forEach((row) => accumulator.consume(row));
+  return accumulator.finish();
 }

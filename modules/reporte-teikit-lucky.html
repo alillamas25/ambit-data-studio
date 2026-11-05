@@ -46,10 +46,15 @@
             <label class="primary-button" for="report-file-input">Seleccionar archivo</label>
             <input id="report-file-input" class="visually-hidden" type="file" accept=".csv,.xlsx,.xls">
             <button id="report-analyze-button" class="primary-button" type="button" disabled>Analizar</button>
+            <button id="report-cancel-button" class="secondary-button" type="button" hidden>Cancelar</button>
             <button id="report-replace-button" class="secondary-button" type="button" hidden>Reemplazar archivo</button>
             <button id="report-download-button" class="secondary-button" type="button" disabled>Descargar Excel</button>
           </div>
           <div id="report-file-meta" class="file-meta" aria-live="polite">Ningún archivo seleccionado.</div>
+          <div id="report-progress" class="report-progress" hidden>
+            <div class="report-progress__label"><span id="report-progress-text">Preparando archivo.</span><span id="report-progress-value"></span></div>
+            <progress id="report-progress-bar" max="100"></progress>
+          </div>
           <div id="report-message" class="message" role="status" aria-live="polite" hidden></div>
         </section>
 
@@ -70,6 +75,6 @@
     </footer>
     <script src="../js/vendor/xlsx.full.min.js"></script>
     <script src="../js/vendor/exceljs.min.js"></script>
-    <script type="module" src="../js/modules/reporte-teikit-lucky/report.js?v=20260918-executive-export"></script>
+    <script type="module" src="../js/modules/reporte-teikit-lucky/report.js?v=20261104-incremental-xlsx"></script>
   </body>
 </html>

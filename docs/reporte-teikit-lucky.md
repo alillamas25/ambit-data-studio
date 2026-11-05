@@ -8,6 +8,8 @@ Primera versión funcional con validación en pantalla y exportación ejecutiva 
 
 El módulo genera indicadores operativos independientes para TEIKIT y LUCKY a partir de archivos Excel o CSV. Todo el procesamiento ocurre localmente en el navegador. El archivo cargado no se modifica, envía ni almacena.
 
+Los archivos `.xlsx` se leen de forma incremental dentro de un Web Worker. El módulo conserva solamente las columnas y acumulados necesarios para el reporte, muestra el avance de lectura y permite cancelar el proceso o sustituir el archivo sin dejar tareas activas. Los formatos `.xls` y `.csv` conservan el lector local compatible existente.
+
 ## Columnas utilizadas
 
 - `Restaurant` o `Restaurante`: clasificación de marca y nombre completo de sucursal.

@@ -17,6 +17,10 @@
 .primary-button:disabled { opacity: 0.45; cursor: not-allowed; }
 .secondary-button { color: var(--color-ink); background: #fff; border: 1px solid var(--color-border); }
 .file-meta { grid-column: 1 / -1; color: var(--color-muted); font-size: 0.85rem; }
+.report-progress { grid-column: 1 / -1; display: grid; gap: 7px; }
+.report-progress[hidden] { display: none; }
+.report-progress__label { display: flex; justify-content: space-between; gap: 16px; color: var(--color-muted); font-size: 0.85rem; }
+.report-progress progress { width: 100%; height: 8px; overflow: hidden; accent-color: var(--color-brand); }
 .message { grid-column: 1 / -1; padding: 10px 12px; border-radius: var(--radius-medium); font-size: 0.9rem; }
 .message--error { color: #8b1a1a; background: #fff0f0; border: 1px solid #f2c5c5; }
 .message--success { color: #1e6547; background: #eef9f4; border: 1px solid #c5e7d7; }

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>Prueba aislada del lector XLSX incremental</title>
+  </head>
+  <body>
+    <h1>Prueba aislada del lector XLSX incremental</h1>
+    <input id="xlsx-file" type="file" accept=".xlsx">
+    <p id="status">Selecciona un archivo.</p>
+    <pre id="result"></pre>
+    <script type="module">
+      const input = document.querySelector("#xlsx-file");
+      const status = document.querySelector("#status");
+      const result = document.querySelector("#result");
+
+      input.addEventListener("change", () => {
+        const [file] = input.files;
+        if (!file) return;
+        const worker = new Worker("../js/modules/reporte-teikit-lucky/xlsx-reader.worker.js", { type: "module" });
+        worker.onmessage = ({ data }) => {
+          if (data.type === "progress") {
+            status.textContent = data.phase === "rows"
+              ? `Filas físicas procesadas: ${data.rowsProcessed.toLocaleString("es-MX")}`
+              : `Fase: ${data.phase}`;
+          }
+          if (data.type === "error") {
+            status.textContent = `ERROR: ${data.error.message}`;
+            result.textContent = JSON.stringify(data.error, null, 2);
+            worker.terminate();
+          }
+          if (data.type === "complete") {
+            status.textContent = "COMPLETADO";
+            result.textContent = JSON.stringify(data.result, null, 2);
+            worker.terminate();
+          }
+        };
+        worker.onerror = ({ message }) => {
+          status.textContent = `ERROR: ${message}`;
+          worker.terminate();
+        };
+        worker.postMessage({
+          type: "analyze-xlsx",
+          file,
+          sampleRowNumbers: [2, 1000, 50000, 100000, 150000, 184672, 194504],
+        });
+      });
+    </script>
+  </body>
+</html>
